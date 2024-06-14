@@ -3,23 +3,20 @@ package com.bugcatcorp.app_bugcat_store.model.entity;
 import com.bugcatcorp.app_bugcat_store.validacion.EmailFormatConstraint;
 import com.bugcatcorp.app_bugcat_store.validacion.TelefonoConstraint;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
 import java.util.Set;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Entity
+@Getter
+@Setter
 @Table(name = "usuario")
 public class Usuario {
 
@@ -35,6 +32,16 @@ public class Usuario {
     @Email(message = "El email debe ser válido")
     @Column(unique = true)
     private String email;
+
+    @Column(unique = true)
+    @NotBlank
+    @Size(min = 4, max = 20)
+    private String username;
+
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private boolean admin;
+
 
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
@@ -67,14 +74,9 @@ public class Usuario {
     @ToString.Exclude
     private Set<Pedido> pedidos;
 
-    @ManyToMany
-    @JoinTable(
-            name = "usuario_rol",
-            joinColumns = @JoinColumn(name = "idusuario"),
-            inverseJoinColumns = @JoinColumn(name = "idrol")
-    )
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name = "idusuario"),
+            inverseJoinColumns = @JoinColumn(name = "idrol"))
     private Set<Rol> roles;
 
     @PrePersist

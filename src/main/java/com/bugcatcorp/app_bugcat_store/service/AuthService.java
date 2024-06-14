@@ -43,17 +43,7 @@ public class AuthService implements IAuthService {
         return usuario;
     }
 
-    @Override
-    public Optional<Usuario> buscarUsuarioxNombre(String nombre){
-        log.info("Buscando usuario por ID: {}", nombre);
-        Optional<Usuario> usuario = ur.findByNombre(nombre);
-        if (usuario.isPresent()) {
-            log.info("Usuario encontrado: {}", usuario.get());
-        } else {
-            log.warn("Usuario con ID: {} no encontrado", nombre);
-        }
-        return usuario;
-    }
+
 
     @Override
     public Optional<Usuario> buscarUsuarioxEmail(String email) {
@@ -70,32 +60,7 @@ public class AuthService implements IAuthService {
     @Override
     @Transactional
     public Usuario agregarUsuario(UsuarioDTO usuarioDTO) {
-        log.info("Agregando nuevo usuario con email: {}", usuarioDTO.getEmail());
-        if (ur.findByEmail(usuarioDTO.getEmail()) != null) {
-            log.warn("El correo {} ya está registrado", usuarioDTO.getEmail());
-            throw new EntityNotFoundException("El correo ya está registrado");
-        }
-        if (ur.findByTelefono(usuarioDTO.getTelefono()) != null) {
-            log.warn("El teléfono {} ya está registrado", usuarioDTO.getTelefono());
-            throw new EntityNotFoundException("El teléfono ya está registrado");
-        }
-        Usuario usuario = new Usuario();
-        usuario.setNombre(usuarioDTO.getNombre());
-        usuario.setEmail(usuarioDTO.getEmail());
-        usuario.setContrasena(usuarioDTO.getContrasena());
-        usuario.setDireccion(usuarioDTO.getDireccion());
-        usuario.setTelefono(usuarioDTO.getTelefono());
-        usuario.setActivo(usuarioDTO.getActivo());
-
-        Optional<Rol> rolClienteOptional = rr.findByRol("Cliente");
-        if (rolClienteOptional.isEmpty()) {
-            throw new EntityNotFoundException("Rol de cliente no encontrado en la base de datos");
-        }
-        Rol rolCliente = rolClienteOptional.get();
-        usuario.setRoles(Set.of(rolCliente));
-        Usuario nuevoUsuario = ur.save(usuario);
-        log.info("Usuario creado con éxito: {}", nuevoUsuario);
-        return nuevoUsuario;
+        return null;
     }
 
 

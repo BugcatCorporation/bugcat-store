@@ -8,9 +8,4 @@ import java.util.Optional;
 
 public interface IRolService {
     List<Rol> listarRoles();
-    Optional<Rol> buscarRolPorId(Long id);
-    Optional<Rol> buscarRolPorNombre(String rol);
-    Rol agregarRol(RolDTO rolDTO);
-    Rol actualizarRol(Long id, RolDTO rolDTO);
-    void borrarRol(Long id);
 }

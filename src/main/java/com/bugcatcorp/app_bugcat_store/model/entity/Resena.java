@@ -29,7 +29,6 @@ public class Resena {
     private String comentario;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    @Temporal(TemporalType.DATE)
     private LocalDateTime fechaResena;
 
     @ManyToOne

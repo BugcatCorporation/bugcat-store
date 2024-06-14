@@ -21,8 +21,7 @@ public class Pago {
     private String metodoPago;
     private Double monto;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime fechaPago;
 
     @ManyToOne

@@ -21,10 +21,10 @@ public class DataInitializer {
     private ProductoRepository productoRepository;
 
     @PostConstruct
-    public void intitData() {
+    public void intit() {
         if(rolRepository.count() == 0) {
-            rolRepository.save(new Rol("ADMIN"));
-            rolRepository.save(new Rol("USER"));
+            rolRepository.save(new Rol("ROLE_USER"));
+            rolRepository.save(new Rol("ROLE_ADMIN"));
         }
     }
 }

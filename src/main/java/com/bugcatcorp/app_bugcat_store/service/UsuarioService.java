@@ -34,13 +34,13 @@ public class UsuarioService implements IUsuarioService {
     @Override
     public Usuario guardarUsuario(Usuario usuario) {
 
-        Optional<Rol> optionalRolUser = rolRepository.findByRol("USER");
+        Optional<Rol> optionalRolUser = rolRepository.findByRol("ROLE_USER");
         Set<Rol> roles = new HashSet<>();
 
         optionalRolUser.ifPresent(roles::add);
 
         if(usuario.isAdmin()){
-            Optional<Rol> optionalRolAdmin = rolRepository.findByRol("ADMIN");
+            Optional<Rol> optionalRolAdmin = rolRepository.findByRol("ROLE_ADMIN");
             optionalRolAdmin.ifPresent(roles::add);
         }
 

@@ -1,5 +1,6 @@
 package com.bugcatcorp.app_bugcat_store.util;
 
+import com.bugcatcorp.app_bugcat_store.model.entity.Categoria;
 import com.bugcatcorp.app_bugcat_store.model.entity.Rol;
 import com.bugcatcorp.app_bugcat_store.repository.CategoriaRepository;
 import com.bugcatcorp.app_bugcat_store.repository.ProductoRepository;
@@ -11,20 +12,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
 public class DataInitializer {
 
     @Autowired
     private RolRepository rolRepository;
-    private UsuarioRepository usuarioRepository;
+
+    @Autowired
     private CategoriaRepository categoriaRepository;
-    private ProductoRepository productoRepository;
+
 
     @PostConstruct
     public void intit() {
         if(rolRepository.count() == 0) {
             rolRepository.save(new Rol("ROLE_USER"));
             rolRepository.save(new Rol("ROLE_ADMIN"));
+        }
+
+        if(categoriaRepository.count() == 0){
+            categoriaRepository.save(new Categoria("Llaveros", "Llaveros Bugcat"));
+            categoriaRepository.save(new Categoria("Peluches", "Peluches Bugcat"));
+            categoriaRepository.save(new Categoria("Tazas", "Tazas Bugcat"));
+            categoriaRepository.save(new Categoria("Polos", "Polos Bugcat"));
+            categoriaRepository.save(new Categoria("Mascarillas", "Mascarillas Bugcat"));
+            categoriaRepository.save(new Categoria("Cartas", "Cartas Bugcat"));
+            categoriaRepository.save(new Categoria("Figuras", "Figuras Bugcat"));
+            categoriaRepository.save(new Categoria("Pegatinas", "Pegatinas Bugcat"));
         }
     }
 }

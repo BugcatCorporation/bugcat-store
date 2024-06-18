@@ -1,16 +1,13 @@
 package com.bugcatcorp.app_bugcat_store.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+
+@Getter
+@Setter
 @Entity
 @Table(name = "categoria")
 public class Categoria {
@@ -24,4 +21,12 @@ public class Categoria {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private List<Producto> productos;
+
+    public Categoria() {
+    }
+
+    public Categoria(String nombre, String descripcion) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+    }
 }

@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/usuarios/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").hasRole("ADMIN")
                         .requestMatchers("/api/rol/**").hasRole("ADMIN")
+                        .requestMatchers("/api/categoria/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilter(new JwtAuthenticationFilter(getAuthenticationManager()))
                 .addFilter(new JwtValidationFilter(getAuthenticationManager()))

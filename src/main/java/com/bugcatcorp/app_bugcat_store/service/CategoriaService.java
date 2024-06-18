@@ -1,75 +1,93 @@
 package com.bugcatcorp.app_bugcat_store.service;
 
 import com.bugcatcorp.app_bugcat_store.exception.EntityNotFoundException;
+import com.bugcatcorp.app_bugcat_store.model.dto.CategoriaCreacionDTO;
 import com.bugcatcorp.app_bugcat_store.model.dto.CategoriaDTO;
 import com.bugcatcorp.app_bugcat_store.model.entity.Categoria;
 import com.bugcatcorp.app_bugcat_store.repository.CategoriaRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
-@AllArgsConstructor
 public class CategoriaService implements ICategoriaService {
 
-    private CategoriaRepository cr;
+    @Autowired
+    private CategoriaRepository repository;
+
 
     @Override
-    public List<Categoria> listarCategorias() {
-        log.info("Listando todas las categorías");
-        return cr.findAll();
+    public List<CategoriaDTO> listarCategorias() {
+
+        var categorias = repository.findAll();
+
+        List<CategoriaDTO> categoriasDTO = new ArrayList<>();
+        // TODO: Convertir la lista de categorias a una lista de CategoriaDTO
+        for (Categoria categoria : categorias) {
+            CategoriaDTO categoriaDTO = new CategoriaDTO();
+            categoriaDTO.setIdcategoria(categoria.getIdcategoria());
+            categoriaDTO.setNombre(categoria.getNombre());
+            categoriaDTO.setDescripcion(categoria.getDescripcion());
+            categoriasDTO.add(categoriaDTO);
+        }
+
+        return categoriasDTO;
     }
 
     @Override
-    public Optional<Categoria> buscarCategoriaPorId(Long id) {
-        log.info("Buscando categoría por ID: {}", id);
-        return cr.findById(id);
+    public Optional<CategoriaDTO> buscarCategoriaPorId(Long id) {
+
+        var categoria = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Categoria no encontrada con el id " + id));
+
+        CategoriaDTO categoriaDTO = new CategoriaDTO();
+        categoriaDTO.setIdcategoria(categoria.getIdcategoria());
+        categoriaDTO.setNombre(categoria.getNombre());
+        categoriaDTO.setDescripcion(categoria.getDescripcion());
+
+        return Optional.of(categoriaDTO);
     }
 
     @Override
-    public Optional<Categoria> buscarCategoriaPorNombre(String nombre) {
-        log.info("Buscando categoría por nombre: {}", nombre);
-        return cr.findByNombre(nombre);
-    }
+    public Optional<CategoriaDTO> agregarCategoria(CategoriaCreacionDTO categoriaCreacionDTO) {
 
-    @Override
-    @Transactional
-    public Categoria agregarCategoria(CategoriaDTO categoriaDTO) {
-        log.info("Agregando nueva categoría: {}", categoriaDTO);
         Categoria categoria = new Categoria();
-        categoria.setNombre(categoriaDTO.getNombre());
-        categoria.setDescripcion(categoriaDTO.getDescripcion());
-        return cr.save(categoria);
+        categoria.setNombre(categoriaCreacionDTO.getNombre());
+        categoria.setDescripcion(categoriaCreacionDTO.getDescripcion());
+        repository.save(categoria);
+
+        // TODO: Convertir la categoria a CategoriaDTO
+        CategoriaDTO categoriaDTO = new CategoriaDTO();
+
+        categoriaDTO.setIdcategoria(categoria.getIdcategoria());
+        categoriaDTO.setNombre(categoria.getNombre());
+        categoriaDTO.setDescripcion(categoria.getDescripcion());
+
+        return Optional.of(categoriaDTO);
     }
 
     @Override
-    @Transactional
-    public Categoria actualizarCategoria(Long id, CategoriaDTO categoriaDTO) {
-        log.info("Actualizando categoría con ID: {} - Nuevos datos: {}", id, categoriaDTO);
-        Optional<Categoria> optionalCategoria = cr.findById(id);
-        if (optionalCategoria.isPresent()) {
-            Categoria categoria = optionalCategoria.get();
-            categoria.setNombre(categoriaDTO.getNombre());
-            categoria.setDescripcion(categoriaDTO.getDescripcion());
-            return cr.save(categoria);
-        } else {
-            throw new EntityNotFoundException("Categoria no encontrada con ID: " + id);
+    public Optional<CategoriaDTO> actualizarCategoria(Long id, CategoriaCreacionDTO categoriaCreacionDTO) {
+
+        var categoria = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Categoria no encontrada con el id " + id));
+        if(categoria != null) {
+            categoria.setNombre(categoriaCreacionDTO.getNombre());
+            categoria.setDescripcion(categoriaCreacionDTO.getDescripcion());
+            repository.save(categoria);
         }
+
+        CategoriaDTO categoriaDTO = new CategoriaDTO();
+        categoriaDTO.setIdcategoria(categoria.getIdcategoria());
+        categoriaDTO.setNombre(categoria.getNombre());
+        categoriaDTO.setDescripcion(categoria.getDescripcion());
+
+        return Optional.of(categoriaDTO);
     }
 
-    @Override
-    @Transactional
-    public void borrarCategoria(Long id) {
-        log.info("Borrando categoría con ID: {}", id);
-        if (cr.existsById(id)) {
-            cr.deleteById(id);
-        } else {
-            throw new EntityNotFoundException("Categoria no encontrada con ID: " + id);
-        }
-    }
+
 }

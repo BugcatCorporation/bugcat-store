@@ -1,89 +1,65 @@
 package com.bugcatcorp.app_bugcat_store.service;
 
 import com.bugcatcorp.app_bugcat_store.exception.EntityNotFoundException;
+import com.bugcatcorp.app_bugcat_store.model.dto.ProveedorCreacionDTO;
 import com.bugcatcorp.app_bugcat_store.model.dto.ProveedorDTO;
 import com.bugcatcorp.app_bugcat_store.model.entity.Proveedor;
 import com.bugcatcorp.app_bugcat_store.repository.ProveedorRepository;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
-@Slf4j
 public class ProveedorService implements IProveedorService {
 
+    @Autowired
     private ProveedorRepository proveedorRepository;
 
     @Override
-    public List<Proveedor> listarProveedores() {
-        log.info("Listando todos los proveedores");
-        return proveedorRepository.findAll();
+    public List<ProveedorDTO> listarProveedores() {
+        return proveedorRepository.findAll().stream()
+                .map(this::convertirAProveedorDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Proveedor> buscarProveedorPorId(Long id) {
-        log.info("Buscando proveedor por ID: {}", id);
-        return proveedorRepository.findById(id);
+    public Optional<ProveedorDTO> obtenerProveedorPorId(Long id) {
+        Proveedor proveedor = proveedorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado con el id " + id));
+        return Optional.of(convertirAProveedorDTO(proveedor));
     }
 
     @Override
-    public Optional<Proveedor> buscarProveedorPorNombre(String nombre) {
-        log.info("Buscando proveedor por nombre: {}", nombre);
-        return proveedorRepository.findByNombre(nombre);
-    }
-
-    @Override
-    public Optional<Proveedor> buscarProveedorPorEmail(String email) {
-        log.info("Buscando proveedor por email: {}", email);
-        return proveedorRepository.findByEmail(email);
-    }
-
-    @Override
-    public Optional<Proveedor> buscarProveedorPorCelular(Integer celular) {
-        log.info("Buscando proveedor por celular: {}", celular);
-        return proveedorRepository.findByCelular(celular);
-    }
-
-    @Override
-    public Proveedor agregarProveedor(ProveedorDTO proveedorDTO) {
-        log.info("Agregando nuevo proveedor: {}", proveedorDTO);
+    public ProveedorDTO agregarProveedor(ProveedorCreacionDTO proveedorCreacionDTO) {
         Proveedor proveedor = new Proveedor();
+        proveedor.setNombre(proveedorCreacionDTO.getNombre());
+        proveedor.setDireccion(proveedorCreacionDTO.getDireccion());
+        proveedor.setEmail(proveedorCreacionDTO.getEmail());
+        proveedor.setCelular(proveedorCreacionDTO.getCelular());
+        proveedor = proveedorRepository.save(proveedor);
+        return convertirAProveedorDTO(proveedor);
+    }
+
+    @Override
+    public ProveedorDTO actualizarProveedor(Long id, ProveedorDTO proveedorDTO) {
+        Proveedor proveedor = proveedorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado con el id " + id));
         proveedor.setNombre(proveedorDTO.getNombre());
         proveedor.setDireccion(proveedorDTO.getDireccion());
         proveedor.setEmail(proveedorDTO.getEmail());
         proveedor.setCelular(proveedorDTO.getCelular());
-        return proveedorRepository.save(proveedor);
+        proveedor = proveedorRepository.save(proveedor);
+        return convertirAProveedorDTO(proveedor);
     }
 
-    @Override
-    public Proveedor actualizarProveedor(Long id, ProveedorDTO proveedorDTO) {
-        log.info("Actualizando proveedor con ID {}: {}", id, proveedorDTO);
-        Optional<Proveedor> optionalProveedor = proveedorRepository.findById(id);
-        if (optionalProveedor.isPresent()) {
-            Proveedor proveedor = optionalProveedor.get();
-            proveedor.setNombre(proveedorDTO.getNombre());
-            proveedor.setDireccion(proveedorDTO.getDireccion());
-            proveedor.setEmail(proveedorDTO.getEmail());
-            proveedor.setCelular(proveedorDTO.getCelular());
-            return proveedorRepository.save(proveedor);
-        } else {
-            log.warn("Proveedor con ID {} no encontrado", id);
-            throw new EntityNotFoundException("Proveedor no encontrado con ID: " + id);
-        }
-    }
-
-    @Override
-    public void borrarProveedor(Long id) {
-        log.info("Borrando proveedor con ID: {}", id);
-        if (proveedorRepository.existsById(id)) {
-            proveedorRepository.deleteById(id);
-        } else {
-            log.warn("Proveedor con ID {} no encontrado", id);
-            throw new EntityNotFoundException("Proveedor no encontrado con ID: " + id);
-        }
+    private ProveedorDTO convertirAProveedorDTO(Proveedor proveedor) {
+        ProveedorDTO dto = new ProveedorDTO();
+        dto.setNombre(proveedor.getNombre());
+        dto.setDireccion(proveedor.getDireccion());
+        dto.setEmail(proveedor.getEmail());
+        dto.setCelular(proveedor.getCelular());
+        return dto;
     }
 }

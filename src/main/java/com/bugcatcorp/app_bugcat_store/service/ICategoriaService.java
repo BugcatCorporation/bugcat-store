@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ICategoriaService {
+
     List<CategoriaDTO> listarCategorias();
     Optional<CategoriaDTO> buscarCategoriaPorId(Long id);
     Optional<CategoriaDTO> agregarCategoria(CategoriaCreacionDTO categoriaCreacionDTO);

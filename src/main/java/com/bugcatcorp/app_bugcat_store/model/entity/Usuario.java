@@ -67,11 +67,6 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<Carrito> carritos;
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private Set<Pedido> pedidos;
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)

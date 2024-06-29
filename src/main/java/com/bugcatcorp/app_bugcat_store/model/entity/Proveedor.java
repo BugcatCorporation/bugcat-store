@@ -29,7 +29,7 @@ public class Proveedor {
 
     @TelefonoConstraint
     @Column(unique = true)
-    private Integer celular;
+    private String celular;
 
     @ManyToMany(mappedBy = "proveedores")
     @EqualsAndHashCode.Exclude

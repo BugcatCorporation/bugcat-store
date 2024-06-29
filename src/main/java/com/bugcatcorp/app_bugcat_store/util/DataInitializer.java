@@ -1,15 +1,16 @@
 package com.bugcatcorp.app_bugcat_store.util;
 
-import com.bugcatcorp.app_bugcat_store.model.entity.Categoria;
-import com.bugcatcorp.app_bugcat_store.model.entity.Rol;
-import com.bugcatcorp.app_bugcat_store.repository.CategoriaRepository;
-import com.bugcatcorp.app_bugcat_store.repository.ProductoRepository;
-import com.bugcatcorp.app_bugcat_store.repository.RolRepository;
-import com.bugcatcorp.app_bugcat_store.repository.UsuarioRepository;
-import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
+import com.bugcatcorp.app_bugcat_store.model.entity.*;
+import com.bugcatcorp.app_bugcat_store.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 @Component
 public class DataInitializer {
@@ -20,15 +21,42 @@ public class DataInitializer {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
+    @Autowired
+    private ProductoRepository productoRepository;
+
+    @Autowired
+    private ProveedorRepository proveedorRepository;
+
+    @Autowired
+    private ResenaRepository resenaRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PedidoRepository pedidoRepository;
+
+
 
     @PostConstruct
-    public void intit() {
-        if(rolRepository.count() == 0) {
+    public void init() {
+        initRoles();
+        initCategorias();
+        initProductos();
+        initProveedores();
+        initResenas();
+        initPedidos();
+    }
+
+    private void initRoles() {
+        if (rolRepository.count() == 0) {
             rolRepository.save(new Rol("ROLE_USER"));
             rolRepository.save(new Rol("ROLE_ADMIN"));
         }
+    }
 
-        if(categoriaRepository.count() == 0){
+    private void initCategorias() {
+        if (categoriaRepository.count() == 0) {
             categoriaRepository.save(new Categoria("Llaveros", "Llaveros Bugcat"));
             categoriaRepository.save(new Categoria("Peluches", "Peluches Bugcat"));
             categoriaRepository.save(new Categoria("Tazas", "Tazas Bugcat"));
@@ -39,4 +67,71 @@ public class DataInitializer {
             categoriaRepository.save(new Categoria("Pegatinas", "Pegatinas Bugcat"));
         }
     }
+
+    private void initProductos() {
+        if (productoRepository.count() == 0) {
+            Optional<Categoria> categoriaTazas = categoriaRepository.findById(3L);
+            categoriaTazas.ifPresent(categoria -> {
+                productoRepository.save(new Producto(null, "Taza mágica", "Taza que cambia de color con la temperatura", 12.99, 150, "https://example.com/taza_magica.jpg", true, categoria, null, null));
+                productoRepository.save(new Producto(null, "Taza de cerámica", "Taza de cerámica con diseño de Bugcat", 9.99, 200, "https://example.com/taza_ceramica.jpg", true, categoria, null, null));
+                productoRepository.save(new Producto(null, "Laptop", "Laptop de alto rendimiento", 1500.00, 10, "https://example.com/laptop.jpg", true, null, null, null));
+                productoRepository.save(new Producto(null, "Smartphone", "Último modelo de smartphone", 800.00, 15, "https://example.com/smartphone.jpg", true, null, null, null));
+                productoRepository.save(new Producto(null, "Tablet", "Tablet para todas tus necesidades", 600.00, 5, "https://example.com/tablet.jpg", true, null, null, null));
+            });
+        }
+    }
+
+    private void initProveedores() {
+        if (proveedorRepository.count() == 0) {
+            Proveedor proveedor1 = new Proveedor(null, "Proveedor A", "Calle Falsa 123", "proveedorA@example.com", "999888777", new HashSet<>());
+            Proveedor proveedor2 = new Proveedor(null, "Proveedor B", "Calle Real 456", "proveedorB@example.com", "999777666", new HashSet<>());
+            proveedorRepository.save(proveedor1);
+            proveedorRepository.save(proveedor2);
+        }
+    }
+
+    private void initResenas() {
+        if (resenaRepository.count() == 0) {
+            Optional<Producto> producto = productoRepository.findById(1L);
+            Optional<Usuario> usuario = usuarioRepository.findById(1L);
+
+            if (producto.isPresent() && usuario.isPresent()) {
+                Resena resena1 = new Resena(null, 5, "Excelente producto, muy recomendado!", LocalDateTime.now(), producto.get(), usuario.get());
+                Resena resena2 = new Resena(null, 4, "Buen producto, pero la entrega se retrasó.", LocalDateTime.now(), producto.get(), usuario.get());
+                resenaRepository.save(resena1);
+                resenaRepository.save(resena2);
+            }
+        }
+    }
+
+    private void initPedidos() {
+        if (pedidoRepository.count() == 0) {
+            Optional<Usuario> usuario = usuarioRepository.findById(1L);
+            if (usuario.isPresent()) {
+                Pedido pedido1 = new Pedido(null, LocalDateTime.now(), "En Proceso", 100.50, "1234 Calle Falsa", new HashSet<>(), new HashSet<>(), usuario.get());
+                Pedido pedido2 = new Pedido(null, LocalDateTime.now(), "Completado", 200.75, "5678 Calle Real", new HashSet<>(), new HashSet<>(), usuario.get());
+                pedidoRepository.save(pedido1);
+                pedidoRepository.save(pedido2);
+
+                Optional<Producto> producto = productoRepository.findById(1L);
+                if (producto.isPresent()) {
+                    Set<DetallePedido> detallesPedido1 = new HashSet<>();
+                    detallesPedido1.add(new DetallePedido(null, 2, 12.99, pedido1, producto.get()));
+                    detallesPedido1.add(new DetallePedido(null, 1, 9.99, pedido1, producto.get()));
+
+                    Set<DetallePedido> detallesPedido2 = new HashSet<>();
+                    detallesPedido2.add(new DetallePedido(null, 1, 1500.00, pedido2, producto.get()));
+                    detallesPedido2.add(new DetallePedido(null, 1, 800.00, pedido2, producto.get()));
+
+                    pedido1.setDetalles(detallesPedido1);
+                    pedido2.setDetalles(detallesPedido2);
+                    pedidoRepository.save(pedido1);
+                    pedidoRepository.save(pedido2);
+                }
+            }
+        }
+
+    }
 }
+
+

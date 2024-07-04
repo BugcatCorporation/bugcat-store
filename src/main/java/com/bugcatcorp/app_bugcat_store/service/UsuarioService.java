@@ -1,5 +1,8 @@
 package com.bugcatcorp.app_bugcat_store.service;
 
+import com.bugcatcorp.app_bugcat_store.model.dto.UsuarioDTO;
+import com.bugcatcorp.app_bugcat_store.model.dto.UsuarioDTO;
+import com.bugcatcorp.app_bugcat_store.model.entity.Usuario;
 import com.bugcatcorp.app_bugcat_store.model.entity.Rol;
 import com.bugcatcorp.app_bugcat_store.model.entity.Usuario;
 import com.bugcatcorp.app_bugcat_store.repository.RolRepository;
@@ -8,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UsuarioService implements IUsuarioService {
@@ -51,6 +51,15 @@ public class UsuarioService implements IUsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    public List<UsuarioDTO>listarTodosLosUsuarios(){
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        List<UsuarioDTO> usuariosDTO = new ArrayList<>();
+        for (Usuario usuario: usuarios){
+            usuariosDTO.add(convertirAUsuarioDTO(usuario));
+        }
+        return usuariosDTO;
+    }
+    
     @Override
     public List<Usuario> listarUsuario() {
         return usuarioRepository.findAll();
@@ -59,5 +68,17 @@ public class UsuarioService implements IUsuarioService {
     @Override
     public Usuario buscarUsuarioXIdUsuario(Long idusuario) {
         return usuarioRepository.findById(idusuario).orElse(null);
+    }
+
+    UsuarioDTO convertirAUsuarioDTO(Usuario Usuario) {
+        UsuarioDTO dto = new UsuarioDTO();
+        dto.setIdusuario(Usuario.getIdusuario());
+        dto.setNombre(Usuario.getNombre());
+        dto.setEmail(Usuario.getEmail());
+        dto.setContrasena(Usuario.getContrasena());
+        dto.setDireccion(Usuario.getDireccion());
+        dto.setTelefono(Usuario.getTelefono());
+        dto.setActivo(Usuario.getActivo());
+        return dto;
     }
 }

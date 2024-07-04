@@ -1,5 +1,7 @@
 package com.bugcatcorp.app_bugcat_store.controller;
 
+import com.bugcatcorp.app_bugcat_store.model.dto.ProductoDTO;
+import com.bugcatcorp.app_bugcat_store.model.dto.UsuarioDTO;
 import com.bugcatcorp.app_bugcat_store.model.entity.Usuario;
 import com.bugcatcorp.app_bugcat_store.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -20,9 +22,10 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping
-    public List<Usuario> findAll(){
-        return usuarioService.listarUsuario();
+    @GetMapping("")
+    public ResponseEntity<List<UsuarioDTO>> obtenerTodosLosUsuarios() {
+        List<UsuarioDTO> usuarios = usuarioService.listarTodosLosUsuarios();
+        return ResponseEntity.ok(usuarios);
     }
 
     @PostMapping

@@ -1,7 +1,9 @@
 package com.bugcatcorp.app_bugcat_store.service;
 
+import com.bugcatcorp.app_bugcat_store.exception.EntityNotFoundException;
 import com.bugcatcorp.app_bugcat_store.model.dto.UsuarioDTO;
 import com.bugcatcorp.app_bugcat_store.model.dto.UsuarioDTO;
+import com.bugcatcorp.app_bugcat_store.model.dto.UsuarioUpdateDTO;
 import com.bugcatcorp.app_bugcat_store.model.entity.Usuario;
 import com.bugcatcorp.app_bugcat_store.model.entity.Rol;
 import com.bugcatcorp.app_bugcat_store.model.entity.Usuario;
@@ -69,6 +71,41 @@ public class UsuarioService implements IUsuarioService {
     public Usuario buscarUsuarioXIdUsuario(Long idusuario) {
         return usuarioRepository.findById(idusuario).orElse(null);
     }
+
+    @Override
+    public Optional<UsuarioDTO> actualizarUsuario(Long id, UsuarioUpdateDTO usuarioUpdateDTO) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el id " + id));
+
+        if (usuarioUpdateDTO.getNombre() != null) {
+            usuario.setNombre(usuarioUpdateDTO.getNombre());
+        }
+        if (usuarioUpdateDTO.getEmail() != null) {
+            usuario.setEmail(usuarioUpdateDTO.getEmail());
+        }
+        if (usuarioUpdateDTO.getDireccion() != null) {
+            usuario.setDireccion(usuarioUpdateDTO.getDireccion());
+        }
+        if (usuarioUpdateDTO.getTelefono() != null) {
+            usuario.setTelefono(usuarioUpdateDTO.getTelefono());
+        }
+        if (usuarioUpdateDTO.getContrasena() != null) {
+            usuario.setContrasena(usuarioUpdateDTO.getContrasena());
+        }
+
+        Usuario usuarioActualizado = usuarioRepository.save(usuario);
+
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        usuarioDTO.setIdusuario(usuarioActualizado.getIdusuario());
+        usuarioDTO.setNombre(usuarioActualizado.getNombre());
+        usuarioDTO.setEmail(usuarioActualizado.getEmail());
+        usuarioDTO.setDireccion(usuarioActualizado.getDireccion());
+        usuarioDTO.setTelefono(usuarioActualizado.getTelefono());
+        usuarioDTO.setActivo(usuarioActualizado.getActivo());
+
+        return Optional.of(usuarioDTO);
+    }
+
 
     UsuarioDTO convertirAUsuarioDTO(Usuario Usuario) {
         UsuarioDTO dto = new UsuarioDTO();

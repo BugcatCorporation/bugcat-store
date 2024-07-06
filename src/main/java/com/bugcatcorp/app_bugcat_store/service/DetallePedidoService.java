@@ -4,6 +4,7 @@ import com.bugcatcorp.app_bugcat_store.model.dto.DetallePedidoCreacionDTO;
 import com.bugcatcorp.app_bugcat_store.model.dto.DetallePedidoDTO;
 import com.bugcatcorp.app_bugcat_store.model.dto.ProductoDTO;
 import com.bugcatcorp.app_bugcat_store.model.entity.DetallePedido;
+import com.bugcatcorp.app_bugcat_store.model.entity.Pedido;
 import com.bugcatcorp.app_bugcat_store.model.entity.Producto;
 import com.bugcatcorp.app_bugcat_store.repository.DetallePedidoRepository;
 import com.bugcatcorp.app_bugcat_store.repository.PedidoRepository;
@@ -33,14 +34,25 @@ public class DetallePedidoService implements IDetallePedidoService {
 
     @Override
     public DetallePedidoDTO createDetallePedido(DetallePedidoCreacionDTO detallePedidoDTO) {
+        // Fetch the Pedido entity
+        Pedido pedido = pedidoRepository.findById(detallePedidoDTO.getPedidoId()).orElseThrow();
+
+        // Fetch the Producto entity
+        Producto producto = productoRepository.findById(detallePedidoDTO.getProductoId()).orElseThrow(() ->
+                new RuntimeException("Producto with id " + detallePedidoDTO.getProductoId() + " not found"));
+
+        // Create DetallePedido entity
         DetallePedido detallePedido = new DetallePedido();
         detallePedido.setCantidad(detallePedidoDTO.getCantidad());
         detallePedido.setPrecio(detallePedidoDTO.getPrecio());
-        detallePedido.setPedido(pedidoRepository.findById(detallePedidoDTO.getPedidoId()).orElseThrow());
-        detallePedido.setProducto(productoRepository.findById(detallePedidoDTO.getProductoId()).orElseThrow());
+        detallePedido.setPedido(pedido);
+        detallePedido.setProducto(producto);
+
+        // Save DetallePedido entity
         detallePedido = detallePedidoRepository.save(detallePedido);
         return convertToDTO(detallePedido);
     }
+
 
     @Override
     public Optional<DetallePedidoDTO> getDetallePedidoById(Long id) {

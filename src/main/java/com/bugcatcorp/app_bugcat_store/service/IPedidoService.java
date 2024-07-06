@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IPedidoService {
-    List<PedidoDTO> listarPedidos();
-    Optional<PedidoDTO> obtenerPedidoPorId(Long id);
+
     PedidoDTO agregarPedido(PedidoCreacionDTO pedidoCreacionDTO);
-    PedidoDTO actualizarPedido(Long id, PedidoDTO pedidoDTO);
-    void eliminarPedido(Long id);
+
 }

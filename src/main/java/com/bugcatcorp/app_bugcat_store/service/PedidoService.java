@@ -9,7 +9,6 @@ import com.bugcatcorp.app_bugcat_store.model.entity.Usuario;
 import com.bugcatcorp.app_bugcat_store.repository.PedidoRepository;
 import com.bugcatcorp.app_bugcat_store.repository.ProductoRepository;
 import com.bugcatcorp.app_bugcat_store.repository.UsuarioRepository;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,23 +29,6 @@ public class PedidoService implements IPedidoService {
     private ProductoRepository productoRepository;
 
     @Override
-    @Transactional(readOnly = true)
-    public List<PedidoDTO> listarPedidos() {
-        return pedidoRepository.findAll().stream()
-                .map(this::convertirAPedidoDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<PedidoDTO> obtenerPedidoPorId(Long id) {
-        Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
-        Hibernate.initialize(pedido.getDetalles());
-        return Optional.of(convertirAPedidoDTO(pedido));
-    }
-
-
-    @Override
     @Transactional
     public PedidoDTO agregarPedido(PedidoCreacionDTO pedidoCreacionDTO) {
         Pedido pedido = new Pedido();
@@ -55,21 +37,22 @@ public class PedidoService implements IPedidoService {
         pedido.setTotal(pedidoCreacionDTO.getTotal());
         pedido.setDireccionEnvio(pedidoCreacionDTO.getDireccionEnvio());
 
-        Usuario usuario = usuarioRepository.findById(pedidoCreacionDTO.getIdUsuario())
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el id " + pedidoCreacionDTO.getIdUsuario()));
-        pedido.setUsuario(usuario);
+        // Obtener el Usuario persistido desde la base de datos
+        Usuario usuario;
+        if (pedidoCreacionDTO.getIdUsuario() == null) {
+            usuario = usuarioRepository.findById(2L)
+                    .orElseThrow(() -> new EntityNotFoundException("Usuario con id 2 no encontrado"));
+        } else {
+            usuario = usuarioRepository.findById(pedidoCreacionDTO.getIdUsuario())
+                    .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+        }
+
+        pedido.setUsuario(usuario); // Asignar el Usuario persistido al Pedido
 
         Set<DetallePedido> detalles = new HashSet<>();
         for (DetallePedidoCreacionDTO dp : pedidoCreacionDTO.getDetalles()) {
             Producto producto = productoRepository.findById(dp.getProductoId())
-                    .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado"));
-
-            if (producto.getStock() < dp.getCantidad()) {
-                throw new IllegalArgumentException("Stock insuficiente para el producto: " + producto.getNombre());
-            }
-
-            producto.setStock(producto.getStock() - dp.getCantidad());
-            productoRepository.save(producto);
+                    .orElseThrow(() -> new EntityNotFoundException("Producto con id " + dp.getProductoId() + " no encontrado"));
 
             DetallePedido detalle = new DetallePedido();
             detalle.setProducto(producto);
@@ -85,27 +68,6 @@ public class PedidoService implements IPedidoService {
         return convertirAPedidoDTO(pedido);
     }
 
-    @Override
-    public PedidoDTO actualizarPedido(Long id, PedidoDTO pedidoDTO) {
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Pedido no encontrado con el id " + id));
-        pedido.setFechaPedido(pedidoDTO.getFechaPedido());
-        pedido.setEstado(pedidoDTO.getEstado());
-        pedido.setTotal(pedidoDTO.getTotal());
-        pedido.setDireccionEnvio(pedidoDTO.getDireccionEnvio());
-
-        pedido = pedidoRepository.save(pedido);
-        return convertirAPedidoDTO(pedido);
-    }
-
-    @Override
-    public void eliminarPedido(Long id) {
-        if (!pedidoRepository.existsById(id)) {
-            throw new EntityNotFoundException("Pedido no encontrado con el id " + id);
-        }
-        pedidoRepository.deleteById(id);
-    }
-
     private PedidoDTO convertirAPedidoDTO(Pedido pedido) {
         PedidoDTO dto = new PedidoDTO();
         dto.setIdpedido(pedido.getIdpedido());
@@ -113,7 +75,6 @@ public class PedidoService implements IPedidoService {
         dto.setEstado(pedido.getEstado());
         dto.setTotal(pedido.getTotal());
         dto.setDireccionEnvio(pedido.getDireccionEnvio());
-
 
         if (pedido.getDetalles() != null) {
             dto.setDetalles(pedido.getDetalles().stream()

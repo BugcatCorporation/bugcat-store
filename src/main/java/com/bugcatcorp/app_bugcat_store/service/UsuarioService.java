@@ -34,6 +34,15 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
+    public Optional<UsuarioDTO> buscarUsuarioPorId(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el id " + id));
+
+        return Optional.of(convertirAUsuarioDTO(usuario));
+    }
+
+
+    @Override
     public Usuario guardarUsuario(Usuario usuario) {
 
         Optional<Rol> optionalRolUser = rolRepository.findByRol("ROLE_USER");

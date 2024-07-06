@@ -15,4 +15,5 @@ public interface IUsuarioService {
     List<Usuario> listarUsuario();
     Usuario buscarUsuarioXIdUsuario(Long idusuario);
     Optional<UsuarioDTO> actualizarUsuario(Long id, UsuarioUpdateDTO usuarioUpdateDTO);
+    Optional<UsuarioDTO> buscarUsuarioPorId(Long id);
 }

@@ -19,13 +19,13 @@ public class DetallePedido {
     private Integer cantidad;
     private Double precio;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pedido_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Pedido pedido;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "producto_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

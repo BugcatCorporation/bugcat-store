@@ -1,6 +1,5 @@
 package com.bugcatcorp.app_bugcat_store.controller;
 
-import com.bugcatcorp.app_bugcat_store.model.dto.ProductoDTO;
 import com.bugcatcorp.app_bugcat_store.model.dto.UsuarioDTO;
 import com.bugcatcorp.app_bugcat_store.model.dto.UsuarioUpdateDTO;
 import com.bugcatcorp.app_bugcat_store.model.entity.Usuario;
@@ -30,6 +29,16 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarios);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Long id) {
+        Optional<UsuarioDTO> usuarioDTO = usuarioService.buscarUsuarioPorId(id);
+        if (usuarioDTO.isPresent()) {
+            return ResponseEntity.ok(usuarioDTO.get());
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody Usuario user, BindingResult result) {
         if (result.hasFieldErrors()) {
@@ -37,6 +46,8 @@ public class UsuarioController {
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.guardarUsuario(user));
     }
+
+
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody Usuario user, BindingResult result) {

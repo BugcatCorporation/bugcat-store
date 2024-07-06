@@ -33,10 +33,6 @@ public class DataInitializer {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private PedidoRepository pedidoRepository;
-
-
 
     @PostConstruct
     public void init() {
@@ -45,7 +41,7 @@ public class DataInitializer {
         initProductos();
         initProveedores();
         initResenas();
-        initPedidos();
+
     }
 
     private void initRoles() {
@@ -104,34 +100,9 @@ public class DataInitializer {
         }
     }
 
-    private void initPedidos() {
-        if (pedidoRepository.count() == 0) {
-            Optional<Usuario> usuario = usuarioRepository.findById(1L);
-            if (usuario.isPresent()) {
-                Pedido pedido1 = new Pedido(null, LocalDateTime.now(), "En Proceso", 100.50, "1234 Calle Falsa", new HashSet<>(), new HashSet<>(), usuario.get());
-                Pedido pedido2 = new Pedido(null, LocalDateTime.now(), "Completado", 200.75, "5678 Calle Real", new HashSet<>(), new HashSet<>(), usuario.get());
-                pedidoRepository.save(pedido1);
-                pedidoRepository.save(pedido2);
 
-                Optional<Producto> producto = productoRepository.findById(1L);
-                if (producto.isPresent()) {
-                    Set<DetallePedido> detallesPedido1 = new HashSet<>();
-                    detallesPedido1.add(new DetallePedido(null, 2, 12.99, pedido1, producto.get()));
-                    detallesPedido1.add(new DetallePedido(null, 1, 9.99, pedido1, producto.get()));
-
-                    Set<DetallePedido> detallesPedido2 = new HashSet<>();
-                    detallesPedido2.add(new DetallePedido(null, 1, 1500.00, pedido2, producto.get()));
-                    detallesPedido2.add(new DetallePedido(null, 1, 800.00, pedido2, producto.get()));
-
-                    pedido1.setDetalles(detallesPedido1);
-                    pedido2.setDetalles(detallesPedido2);
-                    pedidoRepository.save(pedido1);
-                    pedidoRepository.save(pedido2);
-                }
-            }
-        }
 
     }
-}
+
 
 

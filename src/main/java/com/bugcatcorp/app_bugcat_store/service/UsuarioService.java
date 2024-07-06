@@ -40,8 +40,7 @@ public class UsuarioService implements IUsuarioService {
 
         return Optional.of(convertirAUsuarioDTO(usuario));
     }
-
-
+    
     @Override
     public Usuario guardarUsuario(Usuario usuario) {
 
@@ -92,6 +91,9 @@ public class UsuarioService implements IUsuarioService {
         if (usuarioUpdateDTO.getEmail() != null) {
             usuario.setEmail(usuarioUpdateDTO.getEmail());
         }
+        if (usuarioUpdateDTO.getUsername() != null) {
+            usuario.setEmail(usuarioUpdateDTO.getUsername());
+        }
         if (usuarioUpdateDTO.getDireccion() != null) {
             usuario.setDireccion(usuarioUpdateDTO.getDireccion());
         }
@@ -99,7 +101,7 @@ public class UsuarioService implements IUsuarioService {
             usuario.setTelefono(usuarioUpdateDTO.getTelefono());
         }
         if (usuarioUpdateDTO.getContrasena() != null) {
-            usuario.setContrasena(usuarioUpdateDTO.getContrasena());
+            usuario.setContrasena(passwordEncoder.encode(usuarioUpdateDTO.getContrasena()));
         }
 
         Usuario usuarioActualizado = usuarioRepository.save(usuario);
@@ -107,6 +109,7 @@ public class UsuarioService implements IUsuarioService {
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         usuarioDTO.setIdusuario(usuarioActualizado.getIdusuario());
         usuarioDTO.setNombre(usuarioActualizado.getNombre());
+        usuarioDTO.setUsername(usuarioActualizado.getUsername());
         usuarioDTO.setEmail(usuarioActualizado.getEmail());
         usuarioDTO.setDireccion(usuarioActualizado.getDireccion());
         usuarioDTO.setTelefono(usuarioActualizado.getTelefono());
@@ -121,6 +124,7 @@ public class UsuarioService implements IUsuarioService {
         dto.setIdusuario(Usuario.getIdusuario());
         dto.setNombre(Usuario.getNombre());
         dto.setEmail(Usuario.getEmail());
+        dto.setUsername(Usuario.getUsername());
         dto.setContrasena(Usuario.getContrasena());
         dto.setDireccion(Usuario.getDireccion());
         dto.setTelefono(Usuario.getTelefono());

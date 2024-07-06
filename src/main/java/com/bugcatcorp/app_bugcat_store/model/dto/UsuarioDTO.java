@@ -9,6 +9,7 @@ public class UsuarioDTO {
     private Long idusuario;
     private String nombre;
     private String email;
+    private String username;
     private String contrasena;
     private String direccion;
     private String telefono;

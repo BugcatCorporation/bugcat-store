@@ -70,9 +70,9 @@ public class DataInitializer {
             categoriaTazas.ifPresent(categoria -> {
                 productoRepository.save(new Producto(null, "Taza mágica", "Taza que cambia de color con la temperatura", 12.99, 150, "https://taiwanderers.com/wp-content/uploads/2024/04/bugcat-capoo-house-7-635x800.jpg", true, categoria, null, null));
                 productoRepository.save(new Producto(null, "Taza de cerámica", "Taza de cerámica con diseño de Bugcat", 9.99, 200, "https://taiwanderers.com/wp-content/uploads/2024/04/bugcat-capoo-house-36-635x800.jpg", true, categoria, null, null));
-                productoRepository.save(new Producto(null, "Laptop", "Laptop de alto rendimiento", 1500.00, 10, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5-n8vFlJXOPB1QotVW3r5_G_JPGVCbBuDvw&s", true, null, null, null));
-                productoRepository.save(new Producto(null, "Smartphone", "Último modelo de smartphone", 800.00, 15, "https://ae01.alicdn.com/kf/Sb6bc4caea186463aa1db466292b0f564O.jpg_640x640Q90.jpg_.webp", true, null, null, null));
-                productoRepository.save(new Producto(null, "Tablet", "Tablet para todas tus necesidades", 600.00, 5, "https://ih1.redbubble.net/image.3589938603.7405/mwo,x1000,ipad_2_skin-pad,1000x1000,f8f8f8.webp", true, null, null, null));
+                productoRepository.save(new Producto(null, "Laptop", "Laptop de alto rendimiento", 1500.00, 10, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5-n8vFlJXOPB1QotVW3r5_G_JPGVCbBuDvw&s", true, categoria, null, null));
+                productoRepository.save(new Producto(null, "Smartphone", "Último modelo de smartphone", 800.00, 15, "https://ae01.alicdn.com/kf/Sb6bc4caea186463aa1db466292b0f564O.jpg_640x640Q90.jpg_.webp", true, categoria, null, null));
+                productoRepository.save(new Producto(null, "Tablet", "Tablet para todas tus necesidades", 600.00, 5, "https://ih1.redbubble.net/image.3589938603.7405/mwo,x1000,ipad_2_skin-pad,1000x1000,f8f8f8.webp", true, categoria, null, null));
             });
         }
     }
